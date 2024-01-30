@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>After School Lab</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <style>
+        .navbar-nav .nav-item .nav-link {
+            color: white;
+        }
+
+        .navbar-nav .nav-item.active .nav-link,
+        .navbar-nav .nav-item:hover .nav-link {
+            color: red;
+        }
+
+        .glyphicon-shopping-cart {
+            color: white;
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+    <div id="app1">
+
+        <nav class="navbar navbar-expand-sm bg-dark justify-content-center">
+
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contact Us</a>
+                </li>
+            </ul>
+
+            <form class="form-inline" v-on:submit.prevent="searchLessons">
+                <input class="form-control mr-sm-2" type="text" placeholder="Search" v-model="searchQuery">
+                <button class="btn btn-success" type="submit">Search</button>
+            </form>
+            
+
+            <div class="nav navbar-nav navbar-right cart">
+                <button type="button" class="btn btn-primary btn-lg" v-on:click="showCheckout" v-if="cartCount > 0">
+                    <i class="fas fa-shopping-cart"></i> {{ cartCount }} Checkout
+                </button>
+                <button type="button" class="btn btn-primary btn-lg" v-else>
+                    <i class="fas fa-shopping-cart"></i> {{ cartCount }} Checkout
+                </button>
+            </div>
+
+
+        </nav>
+
+
+        <div class="jumbotron text-center">
+            <h1>After School Lab</h1>
+            <p>Best Place To Buy Your test</p>
+        </div>
+
+
+        <div class="container">
+            <div v-if="showProduct">
+
+                <table class="table text-center">
+                    <thead>
+                        <tr>
+                            <th>
+                                <button class="btn btn-link" @click="sorttestByTitle">Ascending /
+                                    Descending</button>
+                            </th>
+                            <th>
+                                <button class="btn btn-link" @click="sorttestByTitle">Subject</button>
+                            </th>
+                            <th>
+                                <button class="btn btn-link" @click="sorttest">Price</button>
+                            </th>
+                            <th>
+                                <button class="btn btn-link" @click="sorttestByLoc">Location</button>
+                            </th>
+                            <th>
+                                <button class="btn btn-link" @click="sorttestBySpace">Space</button>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+
+                <div class="row">
+
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="test[0].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="test[0].title"></h2>
+                            <p v-text="test[0].description"></p>
+                            <p v-text="test[0].location"></p>
+                            <p>Price: {{test[0].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(test[0])"
+                                v-if="canAddToCart(test[0])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="test[0].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="test[0].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{test[0].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="test[1].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="test[1].title"></h2>
+                            <p v-text="test[1].description"></p>
+                            <p v-text="test[1].location"></p>
+                            <p>Price: {{test[1].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(test[1])"
+                                v-if="canAddToCart(test[1])">Add To Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="test[1].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="test[1].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{test[1].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="test[2].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="test[2].title"></h2>
+                            <p v-text="test[2].description"></p>
+                            <p v-text="test[2].location"></p>
+                            <p>Price: {{test[2].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(test[2])"
+                                v-if="canAddToCart(test[2])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="test[2].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="test[2].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{test[2].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="test[3].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="test[3].title"></h2>
+                            <p v-text="test[3].description"></p>
+                            <p v-text="test[3].location"></p>
+                            <p>Price: {{test[3].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(test[3])"
+                                v-if="canAddToCart(test[3])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="test[3].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="test[3].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{test[3].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+                </div>
+
+                <!-- 1st Row Ends Here -->
+
+                <!-- 2nd row Starts Here -->
+
+                <div class="row" style="padding-top: 50px;">
+
+
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="test[4].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="test[4].title"></h2>
+                            <p v-text="test[4].description"></p>
+                            <p v-text="test[4].location"></p>
+                            <p>Price: {{test[4].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(test[4])"
+                                v-if="canAddToCart(test[4])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="test[4].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="test[4].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{test[4].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="test[5].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="test[5].title"></h2>
+                            <p v-text="test[5].description"></p>
+                            <p v-text="test[5].location"></p>
+                            <p>Price: {{test[5].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(test[5])"
+                                v-if="canAddToCart(test[5])">Add To Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="test[5].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="test[5].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{test[5].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="test[6].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="test[6].title"></h2>
+                            <p v-text="test[6].description"></p>
+                            <p v-text="test[6].location"></p>
+                            <p>Price: {{test[6].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(test[6])"
+                                v-if="canAddToCart(test[6])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="test[6].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="test[6].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{test[6].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+
+
+                    <div class="col-sm-3">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="test[7].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="test[7].title"></h2>
+                            <p v-text="test[7].description"></p>
+                            <p v-text="test[7].location"></p>
+                            <p>Price: {{test[7].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(test[7])"
+                                v-if="canAddToCart(test[7])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="test[7].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="test[7].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{test[7].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+
+                </div>
+                <!-- 2nd Row Ends Here -->
+
+                <!-- 3rd row Starts Here -->
+
+                <div class="row" style="padding-top: 50px; padding-bottom: 50px;">
+
+
+                    <div class="col-sm-6">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="test[8].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="test[8].title"></h2>
+                            <p v-text="test[8].description"></p>
+                            <p v-text="test[8].location"></p>
+                            <p>Price: {{test[8].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(test[8])"
+                                v-if="canAddToCart(test[8])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="test[8].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="test[8].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{test[8].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+
+
+                    <div class="col-sm-6">
+                        <main class="text-center">
+                            <figure>
+                                <img v-bind:src="test[9].image" class="img-fluid" style="height: 200px">
+                            </figure>
+                            <h2 v-text="test[9].title"></h2>
+                            <p v-text="test[9].description"></p>
+                            <p v-text="test[9].location"></p>
+                            <p>Price: {{test[9].price | formatPrice}}</p>
+                            <button type="button" class="btn btn-success" v-on:click="addToCart(test[9])"
+                                v-if="canAddToCart(test[9])">Add
+                                To
+                                Cart</button>
+                            <button disabled="true" class="btn btn-primary" v-else>Add To Cart</button>
+                            <span class="inventory-message" v-if="test[9].availableInventory === 0">
+                                All Out
+                            </span>
+                            <span class="inventory-message" v-else-if="test[9].availableInventory > 5">
+                                Buy Now!!
+                            </span>
+                            <span class="inventory-message" v-else>
+                                Only {{test[9].availableInventory}} Left!
+                            </span>
+                        </main>
+                    </div>
+
+                </div>
+
+                <!-- 3rd Row Ends Here -->
+
+
+            </div>
+            <div v-else>
+                <h1 class="text-center">Checkout</h2>
+
+                    <div v-if="isCartEmptyComputed">
+                        <h2 class="text-center">Your cart is empty.</h2>
+                    </div>
+                    <div class="row text-center d-flex justify-content-center">
+                        <div class="card d-flex justify-content-center" v-for="item in cart" :key="item.id">
+                            <div class="card-header">
+                                Featured
+                            </div>
+                            <img v-bind:src="item.image" class="img-fluid" style="height: 200px">
+                            <div class="card-body">
+                                <h5 class="card-title">Lesson: {{ item.title }}</h5>
+                                <p class="card-text">Price: {{ item.price }}</p>
+                                <p class="card-text">Location: {{ item.location }}</p>
+                                <p class="card-text">Quantity: {{ item.quantity }}</p>
+                                <button type="button" class="btn btn-primary" @click="addToCart(item)">Add</button>
+                                <button type="button" class="btn btn-danger"
+                                    @click="removeFromCart(item)">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group col-md-6" :class="{ 'has-error': formErrors.fullName }">
+                                <label for="fullName">Full Name:</label>
+                                <input v-model="fullName" class="form-control" id="fullName" required>
+                                <span class="text-danger" v-if="formErrors.fullName">{{ formErrors.fullName
+                                    }}</span>
+                            </div>
+
+                            <div class="form-group col-md-6" :class="{ 'has-error': formErrors.number }">
+                                <label for="number">Contact Number:</label>
+                                <input v-model="number" class="form-control" id="number" required>
+                                <span class="text-danger" v-if="formErrors.number">{{ formErrors.number }}</span>
+                            </div>
+
+                        </div>
+
+                        <button type="button" class="btn btn-primary" v-on:click="placeOrder">Place Order</button>
+                    </form>
+
+                    <div class="order-summary">
+                        <h3>Order Summary</h3>
+                        <p>Full Name: {{ fullName }}</p>
+                        <p>Contact Number: {{ number }}</p>
+                    </div>
+            </div>
+
+        </div>
+        <!-- Container ends here -->
+
+        <footer class="bg-dark text-white text-center p-3" style="padding-top: 50px;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p>&copy; 2023 Your Company Name</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p>
+                            <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="script.js"></script>
+
+</body>
+
+
+
+</html>

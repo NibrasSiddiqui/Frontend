@@ -126,7 +126,7 @@ let app1 = new Vue({
         console.log("name " + this.fullName);
         console.log("phoneNumber " + this.number);
   
-        const response = await fetch("http://webcourse.eu-west-2.elasticbeanstalk.com/orders", {
+        const response = await fetch("https://webcourse.eu-west-2.elasticbeanstalk.com/orders", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -137,7 +137,7 @@ let app1 = new Vue({
         if (response.ok) {
           console.log("Response is ok");
   
-          response = await fetch("http://webcourse.eu-west-2.elasticbeanstalk.com/update", {
+          response = await fetch("https://webcourse.eu-west-2.elasticbeanstalk.com/update", {
             method: "put",
             headers: {
               "Content-Type": "application/json"
@@ -150,7 +150,7 @@ let app1 = new Vue({
       },
       searchLessons: async function () {
         try {
-          const response = await fetch(`http://webcourse.eu-west-2.elasticbeanstalk.com/search?q=${encodeURIComponent(this.searchQuery)}`);
+          const response = await fetch(`https://webcourse.eu-west-2.elasticbeanstalk.com/search?q=${encodeURIComponent(this.searchQuery)}`);
           this.test = await response.json();
         } catch (error) {
           console.error("Error searching lessons:", error);
@@ -163,7 +163,7 @@ let app1 = new Vue({
       },
     },
     created: async function () {
-      const response = await fetch("http://webcourse.eu-west-2.elasticbeanstalk.com/products");
+      const response = await fetch("https://webcourse.eu-west-2.elasticbeanstalk.com/products");
       this.test = await response.json();
     },
     filters: {

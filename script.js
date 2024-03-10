@@ -163,7 +163,7 @@ let app1 = new Vue({
       },
     },
     created: async function () {
-      const response = await fetch("https://webcourse2.eu-north-1.elasticbeanstalk.com/products");
+      const response = await fetch("http://webcourse.eu-west-2.elasticbeanstalk.com/products");
       this.test = await response.json();
     },
     filters: {
